@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     # created
     "users",
-    # "habits",
+    "habits",
     # "mailings",
 ]
 
