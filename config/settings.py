@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     # created
     "users",
     "habits",
-    # "mailings",
 ]
 
 MIDDLEWARE = [
@@ -144,7 +143,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
 CSRF_TRUSTED_ORIGIN = [
-    "*",
+    "http://localhost:8000",
 ]
 CORS_ALLOW_ALL_ORIGIN = False
 
@@ -154,6 +153,7 @@ CELERY_RESULT_BACKEND = os.getenv("REDIS_LOCATION")
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Телеграм токен
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")

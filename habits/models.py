@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django_celery_beat.models import PeriodicTask
 
 from users.models import User
 
@@ -27,6 +28,7 @@ class MomentHabit(models.Model):
     class Meta:
         verbose_name = "Момент пивычки"
         verbose_name_plural = "Моменты привычек"
+        ordering = ("time",)
 
 
 class Habit(models.Model):
@@ -44,11 +46,11 @@ class Habit(models.Model):
         verbose_name="Место",
         help_text="Место, в котором необходимо выполнять привычку. Напимер, В парке или На работе.",
     )
-    moment: models.Field = models.ForeignKey(
+    moment: models.Field = models.OneToOneField(
         MomentHabit,
         on_delete=models.CASCADE,
         verbose_name="Момент привычки",
-        help_text=("Момент выполнения привычки с заголовком и временем."),
+        help_text="Момент выполнения привычки с заголовком и временем.",
         related_name="moment_habits",
     )
     periodicity: models.Field = models.PositiveSmallIntegerField(
@@ -105,6 +107,15 @@ class Habit(models.Model):
         help_text=(
             "Привычки можно публиковать в общий доступ, чтобы другие пользователи могли брать в пример чужие привычки."
         ),
+    )
+    periodic_task: models.Field = models.OneToOneField(
+        PeriodicTask,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="Периодическая рассылка",
+        help_text="Оповещение о необходимости выполнения привычки.",
+        related_name="task_habits",
     )
 
     def __str__(self):
