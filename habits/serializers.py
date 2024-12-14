@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 
 from habits.models import Habit, MomentHabit
+from habits.services import create_periodic_task, update_periodic_task
 from habits.validators import RelatedHabitValidator, is_pleasant_validator, only_one_award_validator
 
 
@@ -18,21 +19,34 @@ class HabitSerializer(ModelSerializer):
     moment = MomentHabitSerializer(help_text="Объект момента, содержит заголовк и время.")
 
     def create(self, validated_data):
-        """Создание объекта вложенного поля (времени привычки)"""
+        """Создание объекта вложенного поля (времени привычки) и задачи на рассылку"""
         moment_data = validated_data.pop("moment")
         moment = MomentHabit.objects.create(**moment_data)
-        return Habit.objects.create(moment=moment, **validated_data)
+        habit = Habit.objects.create(moment=moment, **validated_data)
+
+        if not habit.is_pleasant:
+            # Создание рассылки только для полезной привычки
+            periodic_task = create_periodic_task(habit)
+            habit.periodic_task = periodic_task
+            habit.save()
+
+        return habit
 
     def update(self, instance, validated_data):
-        """Обновление объекта вложенного поля (времени привычки)"""
+        """Обновление объекта вложенного поля (времени привычки) и задачи на рассылку"""
         moment_data = validated_data.pop("moment")
         moment = instance.moment
+
         for field, value in moment_data.items():
             setattr(moment, field, value)
         moment.save()
+
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()
+
+        update_periodic_task(instance)
+
         return instance
 
     def get_validators(self):
@@ -41,5 +55,5 @@ class HabitSerializer(ModelSerializer):
 
     class Meta:
         model = Habit
-        fields = "__all__"
+        exclude = ("periodic_task",)
         read_only_fields = ("owner",)

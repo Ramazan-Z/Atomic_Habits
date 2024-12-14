@@ -78,5 +78,7 @@ class HabitDestroyView(generics.DestroyAPIView):
     permission_classes = [IsOwnerUser]
 
     def perform_destroy(self, instance):
-        """Удаление связанного объекта момента"""
+        """Удаление связанного объекта момента привычк и задачи рассылки"""
+        if instance.periodic_task:
+            instance.periodic_task.delete()
         instance.moment.delete()
