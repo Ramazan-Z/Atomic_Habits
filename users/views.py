@@ -50,5 +50,6 @@ class UserUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         """Возможность смены пароля"""
         user = serializer.save()
-        user.set_password(user.password)
-        user.save()
+        if "password" in serializer.validated_data:
+            user.set_password(user.password)
+            user.save()

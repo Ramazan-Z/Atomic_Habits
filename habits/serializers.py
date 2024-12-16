@@ -34,12 +34,13 @@ class HabitSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         """Обновление объекта вложенного поля (времени привычки) и задачи на рассылку"""
-        moment_data = validated_data.pop("moment")
+        moment_data = validated_data.pop("moment", None)
         moment = instance.moment
 
-        for field, value in moment_data.items():
-            setattr(moment, field, value)
-        moment.save()
+        if moment_data:
+            for field, value in moment_data.items():
+                setattr(moment, field, value)
+            moment.save()
 
         for field, value in validated_data.items():
             setattr(instance, field, value)
