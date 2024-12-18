@@ -54,6 +54,7 @@ class UserTestCase(APITestCase):
             "phone": "12345678",
             "telegram_id": "12345",
             "city": "city",
+            "password": "new_password",
         }
         response = self.client.patch(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
