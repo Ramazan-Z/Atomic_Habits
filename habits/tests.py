@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.utils.timezone import localtime
 from django_celery_beat.models import PeriodicTask
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -89,7 +90,7 @@ class NewHabitTestCase(APITestCase):
         self.assertEqual(response.json()["periodicity"], ["Ensure this value is less than or equal to 7."])
         self.assertEqual(response.json()["duration"], ["Ensure this value is less than or equal to 120."])
 
-    def test_successful_create_hahit(self):
+    def test_successful_create_habit(self):
         """Успешная проверка всех валидаторов"""
         data = {
             "moment": {"time": "14:30:00"},
@@ -168,7 +169,7 @@ class EditHabitTestCase(APITestCase):
         # Проверка изменения рассылки
         periodic_task_name = f"Mailing for habit {response.json().get('id')}"
         periodic_task = PeriodicTask.objects.get(name=periodic_task_name)
-        self.assertEqual(periodic_task.start_time.time(), edited_habit.moment.time)
+        self.assertEqual(localtime(periodic_task.start_time).time(), edited_habit.moment.time)
 
     def test_unpleasant_habit(self):
         """Случай отмены признака приятной привычки"""

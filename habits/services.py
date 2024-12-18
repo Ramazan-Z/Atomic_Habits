@@ -6,7 +6,7 @@ from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 def get_start_time(time):
     """Возвращает datetime c текущей датой и указанным временем"""
-    today = timezone.now()
+    today = timezone.localtime(timezone=timezone.get_default_timezone())
     start_time = today.replace(hour=time.hour, minute=time.minute, second=time.second, microsecond=time.microsecond)
     return start_time
 

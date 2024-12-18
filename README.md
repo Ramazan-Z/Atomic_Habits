@@ -74,9 +74,9 @@
 ### Тестирование
 Проект покрыт тестами на 93%.
 * Запуск теста
-```
-coverage run --source='.' manage.py test
-```
+    ```
+    coverage run --source='.' manage.py test
+    ```
 * Покрытие кода
 	```
 	coverage report
