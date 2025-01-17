@@ -39,7 +39,7 @@ jobs:
             - name: Install dependencies
               run: |
                   poetry lock
-                  poetry install
+                  poetry install --no-root
             - name: Make envfile
               uses: SpicyPizza/create-envfile@v2.0
               with:
